@@ -7,8 +7,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {collection, updateDoc, doc, deleteDoc} from 'firebase/firestore'
 import { db } from '../FirebaseConfig/FirebaseConfig';
+import { v4 as uuidv4 } from 'uuid';
 
-function Chat({currentUser, users, mate, setMate}) {
+function Chat({currentUser, users, mate, setMate, userMess }) {
     const [img, setImg] = useState('')
     const formRef = useRef(null)
     const [currentId, setCurrentId] = useState('')
@@ -17,22 +18,10 @@ function Chat({currentUser, users, mate, setMate}) {
     const burgerLeft = useRef(null)
     const burgerRight = useRef(null)
     const middleRef = useRef(null)
+    const btnRef = useRef(null)
     const [newMessage, setNewmessage] = useState('') 
     const navigate = useNavigate()
-    let descmes
     const [message, setMessage] = useState([])
-
-    const mateDesctop = (user) => {
-        setMate(user)
-       
-        for (let i = 0; i < users.length; i++) {
-            if (users[i].id === currentId) {
-                descmes = users[i]
-            }
-        }
-        setMessage(message.push(...descmes.messages))
-        console.log(message);
-    }
 
     function clockTime(){
         let time = new Date()
@@ -49,20 +38,25 @@ function Chat({currentUser, users, mate, setMate}) {
         }
 
     useEffect(() => {
+
         setCurrentId(currentUser?.id)
         if (!currentUser) {
             navigate('/')       
         }
         if (!mate) {
             formRef.current.style.display = 'none'
+            btnRef.current.style.display = 'none'
         }else {
             formRef.current.style.display = 'flex'
+            btnRef.current.style.display = 'flex'
         }
 
-    }, [])
+    }, [mate])
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        
+        let id = uuidv4()
 
         const addMess = async (currentId) => {
             const userDoc = doc(db, 'users', currentId)
@@ -73,6 +67,7 @@ function Chat({currentUser, users, mate, setMate}) {
                         {
                             currentName: currentUser.userName,
                             matename: mate.userName,
+                            id: id,
                             mess: newMessage,
                             time: clockTime(),
                         },
@@ -92,6 +87,7 @@ function Chat({currentUser, users, mate, setMate}) {
                         {
                             currentName: currentUser.userName,
                             matename: mate.userName,
+                            id: id,
                             mess: newMessage,
                             time: clockTime(),
                         },
@@ -125,9 +121,23 @@ function Chat({currentUser, users, mate, setMate}) {
         middleRef.current.classList.toggle('chat-content-middle-display')
         middleRef.current.classList.toggle('chat-content-middle-bottom')
     }
+
+    const toggleMess = () => {
+            
+        let mess = userMess?.messages?.filter((el) => el.currentName === currentUser.userName && el.matename === mate.userName || el.currentName === mate.userName && el.matename === currentUser.userName)
+
+        let message = []
+
+        message.unshift(...mess)
+
+        setMessage(message)
+
+    }
+
     const uploadimg = () => {
         // console.log('hy');
         // console.log(img)
+        
     }
 
     return (
@@ -149,13 +159,15 @@ function Chat({currentUser, users, mate, setMate}) {
                                 <h2>Users</h2>
                                 <div className='chat-content-left-bottom-users'>
                                     {users.map((user) => (
-                                        <div key={user.id} onClick={() => mateDesctop(user)} className='users-container'>
-                                            <div className='users-img'>
-                                                <img src={avatar} alt="" />
-                                            </div>
-                                            <div className='users-mess-name'>
-                                                <h4>{user.userName} {user.lastName}</h4>
-                                                <h5>txt</h5>
+                                        <div key={user.id} onClick={() => setMate(user)} className='users-container'>
+                                            <div className='users-container-usersInfo'>
+                                                <div className='users-img'>
+                                                    <img src={avatar} alt="" />
+                                                </div>
+                                                <div className='users-mess-name'>
+                                                    <h4>{user.userName} {user.lastName}</h4>
+                                                    <h5>txt</h5>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
@@ -168,14 +180,29 @@ function Chat({currentUser, users, mate, setMate}) {
                                     < RxHamburgerMenu />           
                                  </div> 
                                  <div className='mate-name'>
-                                      <h2>{mate?.userName} {mate?.lastName}</h2>  
+                                      <h2>{mate?.userName} {mate?.lastName}</h2>
+                                      <div ref={btnRef} className='btns'>
+                                            <button>profile</button>
+                                            <button onClick={toggleMess}>message</button>
+                                      </div>  
                                  </div>
                                  <div onClick={displayRight} ref={burgerRight} className='burger-right'>
                                     < RxHamburgerMenu />           
                                 </div>       
                             </div>
                             <div ref={middleRef} className='chat-content-middle-display'>
-                                
+                                {
+                                    message.map((mess) => (
+                                        <div key={mess.id} 
+                                        style={{
+                                            marginLeft: mess.currentName === currentUser.userName ? '5%' : '25%'
+                                        }}
+                                        className='messContainer'>
+                                            <div className='messName'>{mess.currentName} <span>{mess.time}</span></div>
+                                            <div className='messMess'>{mess.mess}</div>
+                                        </div>
+                                    ))
+                                }
                             </div>
                             <div ref={middleRef} className='chat-content-middle-bottom'>
                                  <div className='chat-content-middle-form'>

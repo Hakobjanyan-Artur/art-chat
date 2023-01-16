@@ -75,9 +75,15 @@
 .users-container {
     display: flex;
     align-items: center;
+    flex-direction: column;
     gap: 20px;
     padding: 0 10px;
     cursor: pointer;
+}
+.users-container-usersInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 .users-container .users-mess-name {
     display: flex;
@@ -98,6 +104,31 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
+}
+.chat-content-middle-header .btns {
+    display: flex;
+    justify-content: space-around;
+    transition: .5s;
+}
+.chat-content-middle-header .btns button {
+    width: 60px;
+    height: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--with);
+    font-family: var(--roboto);
+    font-size: 12px;
+    transition: .5s;
+    border: none;
+    border-radius: 5px;
+    background: var(--blue);
+}
+.chat-content-middle-header .btns button:hover {
+    color: var(--with);
+    background: rgb(32, 86, 236);
 }
 .users-container .users-img img {
     width: 90px;
@@ -130,7 +161,35 @@
 }
 .chat-content-middle .chat-content-middle-display {
     height: 580px;
-} 
+    overflow-y: auto;
+}
+.chat-content-middle-display .messContainer {
+    border: 1px solid var(--grey);
+    max-width: 300px;
+    min-height: 80px;
+    margin: 20px 5px;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 10px var(--grey);
+}
+.chat-content-middle-display .messContainer .messName {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 30px;
+    width: 100%;
+    background: var(--blue);
+    color: var(--with);
+    font-family: var(--elsie);
+}
+.chat-content-middle-display .messContainer .messName span {
+    color: #000;
+    font-family: var(--roboto);
+}
+.chat-content-middle-display .messContainer .messMess {
+    padding: 5px 10px;
+}
 
 .chat-content-middle-bottom {
     height: 60px;

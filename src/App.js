@@ -13,14 +13,22 @@ function App() {
   const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState(user)
   const [mate, setMate] = useState(null)
+  const [userMess, setuserMess] = useState(null)
   const usersRef = collection(db, "users")
 
   useEffect(() => {
+
     const unscribe = onSnapshot(usersRef, (snapShot) => {
       let users = []
       snapShot.forEach((doc) => users.push({...doc.data(), id: doc.id}))
       setUsers(users)
+      for (let i = 0; i < users.length; i++) {
+        if (users[i].id === currentUser.id) {
+          setuserMess(users[i])
+        }
+      }
   })
+
   return () => unscribe()
   }, [])
 
@@ -29,7 +37,7 @@ function App() {
       <Routes>
         <Route path='signup' element={< SignUp />}/>
         <Route index element={< SignIn currentUser={currentUser} setCurrentUser={setCurrentUser} users={users} setUsers={setUsers} />} />
-        <Route path='chat' element={< Chat mate={mate} setMate={setMate} currentUser={currentUser} users={users} />}/>
+        <Route path='chat' element={< Chat userMess={userMess} mate={mate} setMate={setMate} currentUser={currentUser} users={users} />}/>
       </Routes>
     </div>
   );
