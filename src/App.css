@@ -32,6 +32,11 @@ img {
   max-width: 1140px;
   margin: 0 auto;
 }
+@media (max-width: 950px) {
+  .container {
+    max-width: 850px;
+  }
+}
 :root {
   --blue: rgb(68, 121, 251);
   --elsie: 'Elsie';

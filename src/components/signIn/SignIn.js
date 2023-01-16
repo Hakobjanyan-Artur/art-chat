@@ -1,7 +1,5 @@
-import { collection, onSnapshot } from 'firebase/firestore'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { db } from '../FirebaseConfig/FirebaseConfig'
 import './SignIn.css'
 
 function SignIn({users, setUsers, setCurrentUser, currentUser}) {
@@ -10,7 +8,7 @@ function SignIn({users, setUsers, setCurrentUser, currentUser}) {
     const errorRefIn = useRef(null)
     const [check, setCheck] = useState(false)
 
-    const usersRef = collection(db, "users")
+    
 
     useEffect(() => {
         
@@ -18,12 +16,6 @@ function SignIn({users, setUsers, setCurrentUser, currentUser}) {
             navigate('/chat')
           }
 
-        const unscribe = onSnapshot(usersRef, (snapShot) => {
-                let users = []
-                snapShot.forEach((doc) => users.push({...doc.data(), id: doc.id}))
-                setUsers(users)
-            })
-            return () => unscribe()
     }, [])
 
     const handleSubmit = (e) => {

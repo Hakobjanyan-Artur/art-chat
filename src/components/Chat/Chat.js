@@ -1,21 +1,46 @@
 import './Chat.css'
 import { BiSearchAlt } from "react-icons/bi";
 import { IoIosSend } from "react-icons/io";
+import { RxHamburgerMenu } from "react-icons/rx";
 import avatar from '../../image/logo.png'
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Chat({currentUser, users}) {
     const [img, setImg] = useState('')
+    const rightRef = useRef(null)
+    const leftRef = useRef(null)
+    const burgerLeft = useRef(null)
+    const burgerRight = useRef(null)
+    const middleRef = useRef(null)
     const navigate = useNavigate()
     const [mate, setMate] = useState(null)
 
     useEffect(() => {
         if (!currentUser) {
-            navigate('/')        
+            navigate('/')       
         }
     }, [])
-
+    
+    const displayRight = () => {
+        rightRef.current.classList.toggle('block')
+        rightRef.current.classList.toggle('chat-content-right')
+        leftRef.current.classList.toggle('none')
+        burgerLeft.current.classList.toggle('none')
+        burgerLeft.current.classList.toggle('burger-left')
+        middleRef.current.classList.toggle('none')
+        middleRef.current.classList.toggle('chat-content-middle-display')
+        middleRef.current.classList.toggle('chat-content-middle-bottom')
+    }
+    const displayLeft = () => {
+        leftRef.current.classList.toggle('blockLeft')
+        leftRef.current.classList.toggle('chat-content-left')
+        burgerRight.current.classList.toggle('none')
+        burgerRight.current.classList.toggle('burger-right')
+        middleRef.current.classList.toggle('none')
+        middleRef.current.classList.toggle('chat-content-middle-display')
+        middleRef.current.classList.toggle('chat-content-middle-bottom')
+    }
     const uploadimg = () => {
         // console.log('hy');
         // console.log(img)
@@ -26,7 +51,7 @@ function Chat({currentUser, users}) {
             <div className='container'>
                 <div className='chatContainer'>
                     <div className='chatContent'>
-                        <div className='chat-content-left'>
+                        <div ref={leftRef} className='chat-content-left'>
                             <div className='chat-content-left-header'>
                                 <h1>ART-CHAT</h1>
                             </div>
@@ -55,14 +80,20 @@ function Chat({currentUser, users}) {
                         </div>
                         <div className='chat-content-middle'>
                             <div className='chat-content-middle-header'>
+                                 <div onClick={displayLeft} ref={burgerLeft} className='burger-left'>
+                                    < RxHamburgerMenu />           
+                                 </div> 
                                  <div className='mate-name'>
                                       <h2>{mate?.userName} {mate?.lastName}</h2>  
-                                 </div>       
+                                 </div>
+                                 <div onClick={displayRight} ref={burgerRight} className='burger-right'>
+                                    < RxHamburgerMenu />           
+                                </div>       
                             </div>
-                            <div className='chat-content-middle-display'>
+                            <div ref={middleRef} className='chat-content-middle-display'>
 
                             </div>
-                            <div className='chat-content-middle-bottom'>
+                            <div ref={middleRef} className='chat-content-middle-bottom'>
                                  <div className='chat-content-middle-form'>
                                       <form>
                                         <input type="text" placeholder='Type your message here ...' />
@@ -71,7 +102,7 @@ function Chat({currentUser, users}) {
                                  </div>       
                             </div>
                         </div>
-                        <div className='chat-content-right'>
+                        <div ref={rightRef} className='chat-content-right'>
                             <div className='chat-content-right-header'>
                                 <div className='user-img'>
                                     <img src={avatar} alt="" />
