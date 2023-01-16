@@ -12,6 +12,7 @@ function App() {
   const user = JSON.parse(localStorage.getItem('currentUser')) || null
   const [users, setUsers] = useState([])
   const [currentUser, setCurrentUser] = useState(user)
+  const [mate, setMate] = useState(null)
   const usersRef = collection(db, "users")
 
   useEffect(() => {
@@ -28,7 +29,7 @@ function App() {
       <Routes>
         <Route path='signup' element={< SignUp />}/>
         <Route index element={< SignIn currentUser={currentUser} setCurrentUser={setCurrentUser} users={users} setUsers={setUsers} />} />
-        <Route path='chat' element={< Chat currentUser={currentUser} users={users} />}/>
+        <Route path='chat' element={< Chat mate={mate} setMate={setMate} currentUser={currentUser} users={users} />}/>
       </Routes>
     </div>
   );

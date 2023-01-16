@@ -48,9 +48,7 @@ function SignUp() {
                 date: clockTime(),
                 message: []
             })
-            setTimeout(() => {  
-                
-            }, 1000)
+
         }else {
             errorUpRef.current.style.display = 'block'
         }
@@ -96,7 +94,7 @@ function SignUp() {
                                 placeholder='Confirm Your Password' 
                             />
                             <div className='btnUp'>
-                                    <button onClick={() => navigate('/')} className='signUpBtn'>Sign Up</button>  
+                                    <button className='signUpBtn'>Sign Up</button>  
                                 <span onClick={() => navigate('/')}>Sign In</span>
                             </div>
                         </form>

@@ -5,22 +5,106 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import avatar from '../../image/logo.png'
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {collection, updateDoc, doc, deleteDoc} from 'firebase/firestore'
+import { db } from '../FirebaseConfig/FirebaseConfig';
 
-function Chat({currentUser, users}) {
+function Chat({currentUser, users, mate, setMate}) {
     const [img, setImg] = useState('')
+    const formRef = useRef(null)
+    const [currentId, setCurrentId] = useState('')
     const rightRef = useRef(null)
     const leftRef = useRef(null)
     const burgerLeft = useRef(null)
     const burgerRight = useRef(null)
     const middleRef = useRef(null)
+    const [newMessage, setNewmessage] = useState('') 
     const navigate = useNavigate()
-    const [mate, setMate] = useState(null)
+    let descmes
+    const [message, setMessage] = useState([])
+
+    const mateDesctop = (user) => {
+        setMate(user)
+       
+        for (let i = 0; i < users.length; i++) {
+            if (users[i].id === currentId) {
+                descmes = users[i]
+            }
+        }
+        setMessage(message.push(...descmes.messages))
+        console.log(message);
+    }
+
+    function clockTime(){
+        let time = new Date()
+        let d = time.getDate().toString()
+        let m = time.getUTCMonth() + 1
+        m = m.toString()
+        let y = time.getFullYear().toString()
+        let h = time.getHours().toString()
+        let min = time.getMinutes().toString()
+
+        if(h.length < 2){h = '0' + h}        
+        if(min.length < 2){min = '0' + min}               
+               return d + '.' + m + '.' + y + ' ' + h + ':' + min
+        }
 
     useEffect(() => {
+        setCurrentId(currentUser?.id)
         if (!currentUser) {
             navigate('/')       
         }
+        if (!mate) {
+            formRef.current.style.display = 'none'
+        }else {
+            formRef.current.style.display = 'flex'
+        }
+
     }, [])
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        const addMess = async (currentId) => {
+            const userDoc = doc(db, 'users', currentId)
+            let idx = users.findIndex((user) => user.id === currentId)
+            
+            const newMess = {
+                messages: [
+                        {
+                            currentName: currentUser.userName,
+                            matename: mate.userName,
+                            mess: newMessage,
+                            time: clockTime(),
+                        },
+                        ...users[idx].messages
+                ]
+            }
+            await updateDoc(userDoc, newMess)
+        }
+        addMess(currentId)
+
+        const addMessto = async (mateid) => {
+            const userDoc = doc(db, 'users', mateid)
+            let idx = users.findIndex((user) => user.id === mateid)
+            
+            const newMess = {
+                messages: [
+                        {
+                            currentName: currentUser.userName,
+                            matename: mate.userName,
+                            mess: newMessage,
+                            time: clockTime(),
+                        },
+                        ...users[idx].messages
+                ]
+            }
+            await updateDoc(userDoc, newMess)
+        }
+        addMessto(mate.id)
+        
+
+        setNewmessage('')
+    }
     
     const displayRight = () => {
         rightRef.current.classList.toggle('block')
@@ -65,7 +149,7 @@ function Chat({currentUser, users}) {
                                 <h2>Users</h2>
                                 <div className='chat-content-left-bottom-users'>
                                     {users.map((user) => (
-                                        <div key={user.id} onClick={() => setMate(user)} className='users-container'>
+                                        <div key={user.id} onClick={() => mateDesctop(user)} className='users-container'>
                                             <div className='users-img'>
                                                 <img src={avatar} alt="" />
                                             </div>
@@ -91,12 +175,12 @@ function Chat({currentUser, users}) {
                                 </div>       
                             </div>
                             <div ref={middleRef} className='chat-content-middle-display'>
-
+                                
                             </div>
                             <div ref={middleRef} className='chat-content-middle-bottom'>
                                  <div className='chat-content-middle-form'>
-                                      <form>
-                                        <input type="text" placeholder='Type your message here ...' />
+                                      <form ref={formRef} onSubmit={handleSubmit}>
+                                        <input onChange={(e) => setNewmessage(e.target.value)} value={newMessage} type="text" placeholder='Type your message here ...' />
                                         <button> <IoIosSend /></button>
                                       </form>  
                                  </div>       
